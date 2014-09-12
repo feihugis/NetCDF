@@ -1,9 +1,9 @@
 package thredds.catalog;
 
-import ucar.ma2.Array;
-import ucar.ma2.InvalidRangeException;
+import ucar.ma2.*;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
+
 
 import java.io.IOException;
 
@@ -11,25 +11,30 @@ import java.io.IOException;
  * Created by feihu on 9/11/14.
  */
 public class TestHDF {
+
     public static void main(String args[]) throws IOException{
 
-        NetcdfFile ncfile = NetcdfFile.open("/Users/feihu/Documents/Data/ijE4M20a000001.nc");//ijE4M20a000001.nc,MERRA100.prod.simul.tavgM_2d_mld_Nx.198001.hdf");
+        NetcdfFile ncfile = NetcdfFile.open("/Users/feihu/Documents/Data/MERRA100.prod.simul.tavgM_2d_mld_Nx.198001.hdf");//ijE4M20a000001.nc,MERRA100.prod.simul.tavgM_2d_mld_Nx.198001.hdf");
+        //NetcdfFile ncfile = NetcdfFile.open("/Users/feihu/Documents/Data/ijE4M20a000001.nc");
+        Variable var = ncfile.getVariables().get(6);//6
 
-
-        Variable var = ncfile.getVariables().get(1);
         int[] origin = new int[var.getRank()];
-        int[] shape = new int[var.getRank()];
+        int[] shape = new int[var.getShape().length];
 
         for (int i=0; i<origin.length; i++) {
             origin[i] = 0;
-            shape[i] = 1;
+            shape[i] = var.getDimension(i).getLength();
         }
 
-
+          shape[0] = 1;
+//        shape[0] =1;
+//        shape[1] = 361;
+//        shape[2] = 540;
 
         try {
-          Array offset = var.getLocalityInformation(origin,shape);
-          String num = offset.toString();
+          ArrayLong offset = var.getLocalityInformation(origin,shape);
+          long length = offset.getSize();
+          long num = offset.getLong(0);
           System.out.println(num);
         } catch (IOException e) {
             e.printStackTrace();

@@ -361,7 +361,7 @@ public String NC_check_name(String name) {
   protected ucar.nc2.NetcdfFile ncfile;
   protected boolean readonly;
 
-  protected N3header header;
+  public N3header header;
   //protected int numrecs;
   //protected long recsize;
   protected long lastModified; // used by sync
@@ -477,8 +477,11 @@ public String NC_check_name(String name) {
       for( int i = 0; i < chunk.getNelems(); i++){
         // write the offset into the results array, then iterate the index
         array.setLong(aIndex, chunk.getSrcPos() + (i * dataSize));
+          System.out.println("********chunk**********" + array.getLong(aIndex));
         aIndex.incr();
       }
+
+        System.out.println("*****"+this.raf.getFilePosition());
     }
 
     return array;

@@ -738,11 +738,11 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
 
   public ArrayLong getLocalityInformation(ucar.nc2.Variable v, Section ranges)
             throws IOException, InvalidRangeException {
-        /*if (spi == null) {
+        if (spi == null) {
             throw new IOException("spi is null");
         } else if (!spi.supportsLocalityInformation()) {
             throw new IOException("IOSP " + spi.getFileTypeId() + " does not support getLocalityInformation()");
-        }*/
+        }
 
         return spi.getLocalityInformation(v, ranges);
   }

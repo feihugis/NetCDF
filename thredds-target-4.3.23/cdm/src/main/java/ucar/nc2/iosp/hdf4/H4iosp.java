@@ -79,6 +79,73 @@ public class H4iosp extends AbstractIOServiceProvider {
     ncfile.finish();
   }
 
+    public boolean supportsLocalityInformation() {
+        return true;
+    }
+
+    /**
+     * Returns an ArrayLong with each entry corresponding to the offset in the filestream
+     * of the same data cell in the section arguement to the function
+     *
+     * @param v2 the variable to get the data from
+     * @param section the record range to read
+     * @return an ArrayLong object that's the shape as the section arguement
+     * @throws InvalidRangeException on error
+     * @throws IOException on error
+     */
+    public ArrayLong getLocalityInformation(ucar.nc2.Variable v2, Section section)
+            throws InvalidRangeException, IOException {
+
+        // An array to hold the offsets that will be returned
+        ArrayLong array = new ArrayLong(section.getShape());
+
+        // Index into the results array
+        Index aIndex = array.getIndex();
+
+        // dataSize is used to increment the offsets within a given
+        // chunk appropriately
+        DataType type = v2.getDataType();
+        int dataSize = type.getSize();
+
+        Layout layout = getLayout(v2, section);
+
+        // iterate over all the chunks in the calculated Layout
+        while( layout.hasNext() ){
+            Layout.Chunk chunk = layout.next();
+
+            // iterate over the elements in this chunk
+            for( int i = 0; i < chunk.getNelems(); i++){
+                // write the offset into the results array, then iterate the index
+                array.setLong(aIndex, chunk.getSrcPos() + (i * dataSize));
+                System.out.println("********chunk**********" + array.getLong(aIndex) + "****num =" + aIndex);
+                aIndex.incr();
+            }
+        }
+
+        System.out.println("*****"+this.raf.getFilePosition());
+
+        return array;
+    }
+
+    /**
+     * Returns a Layout object for use by an N3iosp object
+     *
+     * @param v2 the variable to get the layout information for
+     * @param section the record range to read
+     * @return a Layout corresponding to the Section requested
+     * @throws IOException on error
+     */
+    private Layout getLayout(Variable v2, Section section) throws InvalidRangeException,IOException {
+        H4header.Vinfo vinfo = (H4header.Vinfo) v2.getSPobject();
+        vinfo.setData(((H4header.Vinfo) v2.getSPobject()).data,v2.getElementSize());
+        vinfo.setLayoutInfo();
+
+        Layout layout = (!v2.isUnlimited()) ? new LayoutRegular(vinfo.start, v2.getElementSize(), v2.getShape(), section)
+                : new LayoutRegularSegmented(/*vinfo.start*/header.getFilePosition(), v2.getElementSize(), vinfo.elemSize,v2.getShape(), section);
+
+        return layout;
+    }
+
   public Array readData(Variable v, Section section) throws IOException, InvalidRangeException {
     if (v instanceof Structure)
       return readStructureData((Structure) v, section);
@@ -495,6 +562,8 @@ public class H4iosp extends AbstractIOServiceProvider {
       return header;
     return super.sendIospMessage(message);
   }
+
+
 
 
 }

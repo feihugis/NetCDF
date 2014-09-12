@@ -2173,5 +2173,10 @@ public class H4header {
     //ucar.unidata.io.RandomAccessFile.setDebugAccess(true);
     test("C:/data/hdf4/" + filename1); */
   }
+
+  public long getFilePosition() throws IOException{
+      long length = raf.getFilePosition();
+      return length;
+  }
 }
 

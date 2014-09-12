@@ -1791,5 +1791,9 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable {
     return false;
   }
 
+  public long getFilePosition() {
+      return this.filePosition;
+  }
+
 }
 
