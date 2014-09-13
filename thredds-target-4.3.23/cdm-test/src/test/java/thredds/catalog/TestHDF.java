@@ -18,18 +18,14 @@ public class TestHDF {
         //NetcdfFile ncfile = NetcdfFile.open("/Users/feihu/Documents/Data/ijE4M20a000001.nc");
         Variable var = ncfile.getVariables().get(6);//6
 
+
         int[] origin = new int[var.getRank()];
         int[] shape = new int[var.getShape().length];
 
         for (int i=0; i<origin.length; i++) {
             origin[i] = 0;
-            shape[i] = var.getDimension(i).getLength();
+            shape[i] = var.getDimension(i).getLength()-origin[i];
         }
-
-          shape[0] = 1;
-//        shape[0] =1;
-//        shape[1] = 361;
-//        shape[2] = 540;
 
         try {
           ArrayLong offset = var.getLocalityInformation(origin,shape);

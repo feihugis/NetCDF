@@ -128,7 +128,7 @@ public class H4iosp extends AbstractIOServiceProvider {
     }
 
     /**
-     * Returns a Layout object for use by an N3iosp object
+     * Returns a Layout object for use by an H4iosp object
      *
      * @param v2 the variable to get the layout information for
      * @param section the record range to read
@@ -137,11 +137,14 @@ public class H4iosp extends AbstractIOServiceProvider {
      */
     private Layout getLayout(Variable v2, Section section) throws InvalidRangeException,IOException {
         H4header.Vinfo vinfo = (H4header.Vinfo) v2.getSPobject();
-        vinfo.setData(((H4header.Vinfo) v2.getSPobject()).data,v2.getElementSize());
-        vinfo.setLayoutInfo();
+        vinfo.setLayoutInfo();   // make sure needed info is present
 
-        Layout layout = (!v2.isUnlimited()) ? new LayoutRegular(vinfo.start, v2.getElementSize(), v2.getShape(), section)
-                : new LayoutRegularSegmented(/*vinfo.start*/header.getFilePosition(), v2.getElementSize(), vinfo.elemSize,v2.getShape(), section);
+        // make sure section is complete
+        section = Section.fill(section, v2.getShape());
+
+        Layout layout = (!v2.isUnlimited()) ? new LayoutRegular(vinfo.data.getOffset(), v2.getElementSize(), v2.getShape(), section)
+               : new LayoutRegularSegmented(vinfo.start, v2.getElementSize(), vinfo.elemSize,v2.getShape(), section);
+        //Layout layout = new LayoutSegmented(vinfo.segPos, vinfo.segSize, v2.getElementSize(), v2.getShape(), section);
 
         return layout;
     }

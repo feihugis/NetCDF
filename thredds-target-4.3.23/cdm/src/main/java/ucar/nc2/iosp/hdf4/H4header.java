@@ -1007,6 +1007,7 @@ public class H4header {
 
     // regular
     int start = -1;
+
     int length;
 
     // linked
@@ -2174,6 +2175,12 @@ public class H4header {
     test("C:/data/hdf4/" + filename1); */
   }
 
+   /**
+     * Returns the file position offset
+     *
+     * @return a file position offset
+     * @throws IOException on error
+     */
   public long getFilePosition() throws IOException{
       long length = raf.getFilePosition();
       return length;
